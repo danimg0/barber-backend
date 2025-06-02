@@ -1,12 +1,18 @@
 import { getUserFromRequest } from "@/lib/auth/authHelper";
 import { supabase } from "@/lib/constants/supabase";
+import { NextRequest } from "next/server";
 
 interface Params {
   id: string;
 }
-export async function DELETE(request: Request, { id }: Params) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { user, error, status } = await getUserFromRequest(request);
+
+    const { id } = (await params) as Params;
 
     if (error) {
       return new Response(

@@ -1,5 +1,6 @@
 import { getUserFromRequest } from "@/lib/auth/authHelper";
 import { supabase } from "@/lib/constants/supabase";
+import { NextRequest } from "next/server";
 
 interface Servicio {
   nombre: string;
@@ -8,12 +9,16 @@ interface Servicio {
   duracion: number | string;
 }
 
-export async function PUT(request: Request, { id }: { id: number }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const body: Servicio = await request.json();
 
     // const url = new URL(request.url);
     // const id = url.searchParams.get("id");
+    const { id } = await params;
     const servicioId = Number(id);
 
     if (!servicioId) {
@@ -79,8 +84,12 @@ export async function PUT(request: Request, { id }: { id: number }) {
 }
 
 // ///////////////////////////     METODO DELETE    ///////////////////////////
-export async function DELETE(request: Request, { id }: { id: number }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params;
     const servicioId = Number(id);
 
     if (!servicioId) {
