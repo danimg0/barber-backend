@@ -23,7 +23,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          backgroundColor: "#000000",
+          fontFamily: "Arial, sans-serif",
+          color: "#333",
+        }}
+        className={`${geistSans.variable} ${geistMono.variable}`}
+      >
         {children}
       </body>
     </html>
