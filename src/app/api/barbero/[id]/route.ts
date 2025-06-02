@@ -57,9 +57,25 @@ export async function DELETE(
 }
 
 // PATCH /api/barberos/[id]
-export async function PATCH(request: Request, { id }: { id: number }) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
+    const {
+      user,
+      error: authError,
+      status,
+    } = await getUserFromRequest(request);
+    if (authError) {
+      return new Response(
+        JSON.stringify({ success: false, message: authError }),
+        { status: status, headers: { "Content-Type": "application/json" } }
+      );
+    }
     const body = await request.json();
+
+    const id = Number(params.id);
 
     const { name, email, phone, horario } = body;
 
