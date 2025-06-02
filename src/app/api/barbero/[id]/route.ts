@@ -4,8 +4,11 @@
 import { getUserFromRequest } from "@/lib/auth/authHelper";
 import { supabase } from "@/lib/constants/supabase";
 
-export const DELETE = async (request: Request, { id }: { id: number }) => {
-  const barberoId = Number(id);
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const barberoId = Number(params.id);
   console.log(`Eliminando barbero con ID: ${barberoId}`);
 
   if (!barberoId) {
@@ -51,7 +54,7 @@ export const DELETE = async (request: Request, { id }: { id: number }) => {
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
-};
+}
 
 // PATCH /api/barberos/[id]
 export async function PATCH(request: Request, { id }: { id: number }) {
