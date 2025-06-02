@@ -3,9 +3,10 @@
 
 import { getUserFromRequest } from "@/lib/auth/authHelper";
 import { supabase } from "@/lib/constants/supabase";
+import { NextRequest } from "next/server";
 
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const barberoId = Number(params.id);
@@ -58,7 +59,7 @@ export async function DELETE(
 
 // PATCH /api/barberos/[id]
 export async function PATCH(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
