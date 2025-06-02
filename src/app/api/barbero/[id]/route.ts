@@ -6,10 +6,11 @@ import { supabase } from "@/lib/constants/supabase";
 import { NextRequest } from "next/server";
 
 export async function DELETE(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const barberoId = Number(context.params.id);
+  const { id } = await params;
+  const barberoId = await Number(id);
   console.log(`Eliminando barbero con ID: ${barberoId}`);
 
   if (!barberoId) {
@@ -59,8 +60,8 @@ export async function DELETE(
 
 // PATCH /api/barberos/[id]
 export async function PATCH(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const {
@@ -76,7 +77,7 @@ export async function PATCH(
     }
     const body = await request.json();
 
-    const id = Number(context.params.id);
+    const id = Number((await params).id);
 
     const { name, email, phone, horario } = body;
 
