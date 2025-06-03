@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/constants/supabase";
+import { corsHeaders } from "@/utils/cors";
 import jwt from "jsonwebtoken";
 export const runtime = "nodejs";
 
@@ -21,7 +22,10 @@ export async function GET(request: Request): Promise<Response> {
           success: false,
           message: "Token no proporcionado",
         }),
-        { status: 401, headers: { "Content-Type": "application/json" } }
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
       );
     }
 
@@ -42,7 +46,10 @@ export async function GET(request: Request): Promise<Response> {
           success: false,
           message: `Token inválido o expirado: ${error}`,
         }),
-        { status: 401, headers: { "Content-Type": "application/json" } }
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
       );
     }
 
@@ -59,7 +66,10 @@ export async function GET(request: Request): Promise<Response> {
           success: false,
           message: "Usuario no encontrado",
         }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
       );
     }
 
@@ -85,7 +95,10 @@ export async function GET(request: Request): Promise<Response> {
     console.error("Error en check-status:", error);
     return new Response(
       JSON.stringify({ success: false, message: "Error interno del servidor" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      }
     );
   }
 }

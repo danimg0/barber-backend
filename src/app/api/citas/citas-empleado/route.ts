@@ -44,7 +44,8 @@ export async function GET(request: Request) {
       invitado
       `
       )
-      .order("fecha_cita");
+      .order("fecha_cita")
+      .order("hora_inicio");
 
     if (!idBarbero) {
       const { user, status, error } = await getUserFromRequest(request);

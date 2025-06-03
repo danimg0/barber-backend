@@ -1,5 +1,6 @@
 import { desincriptar } from "@/lib/auth/authHelper";
 import { supabase } from "@/lib/constants/supabase";
+import { corsHeaders } from "@/utils/cors";
 import jwt from "jsonwebtoken";
 export const runtime = "nodejs";
 
@@ -17,27 +18,29 @@ type LoginResponse = {
   token?: string;
 };
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
+}
 
 export async function POST(request: Request): Promise<Response> {
-  // Manejar preflight OPTIONS
-  if (request.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
-  }
-
   try {
     // Parsear el cuerpo de la solicitud
     const body: LoginRequest = await request.json();
     const { email, password } = body;
 
     console.log("Login recibida en la api", email, password);
+
+    console.log("CORS Headers:", {
+      "Content-Type": "application/json",
+      ...corsHeaders,
+    });
 
     // Validar los datos de entrada
     if (!email || !password) {
@@ -103,7 +106,7 @@ export async function POST(request: Request): Promise<Response> {
       throw new Error("JWT_SECRET is not defined in environment variables");
     }
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "12m",
+      expiresIn: "360d",
     });
     // Devolver éxito y token
     const response: LoginResponse = {
@@ -118,7 +121,7 @@ export async function POST(request: Request): Promise<Response> {
 
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error) {
     console.error("Error en login:", error);

@@ -19,6 +19,8 @@ export async function POST(request: Request) {
       );
     }
 
+    console.log("Datos recibidos en la api", onlyBody);
+
     // Comprobar si el email ya existe
     const { data: existingUser, error: emailError } = await supabase
       .from("usuarios")
@@ -26,7 +28,8 @@ export async function POST(request: Request) {
       .eq("email", onlyBody.email)
       .single();
 
-    if (emailError) {
+    if (emailError && emailError.code !== "PGRST116") {
+      // Solo es un error si NO es "no rows"
       console.error("Error al comprobar email:", emailError);
       return new Response(
         JSON.stringify({
@@ -37,7 +40,7 @@ export async function POST(request: Request) {
       );
     }
     if (existingUser) {
-      console.log("El email ya está registrado");
+      // Ya existe ese email
       return new Response(
         JSON.stringify({
           success: false,
@@ -52,7 +55,8 @@ export async function POST(request: Request) {
       .select("phone")
       .eq("phone", onlyBody.phone)
       .single();
-    if (phoneError) {
+    if (phoneError && phoneError.code !== "PGRST116") {
+      // Solo es un error si NO es "no rows"
       console.error("Error al comprobar teléfono:", phoneError);
       return new Response(
         JSON.stringify({
@@ -63,7 +67,7 @@ export async function POST(request: Request) {
       );
     }
     if (existingPhone) {
-      console.log("El teléfono ya está registrado");
+      // Ya existe ese teléfono
       return new Response(
         JSON.stringify({
           success: false,
