@@ -90,13 +90,7 @@ export async function GET(request: Request) {
     );
   const fechaObj = new Date(dia);
   const diaStr = fechaObj.toISOString().split("T")[0];
-  // console.log("fecha", diaStr);
 
-  // const { data: citas, error: errorCitas } = await supabase
-  //   .from("citas_con_servicios")
-  //   .select("id_cita, hora_inicio, duracion_total, tipo_estado")
-  //   .eq("fecha_cita", diaStr)
-  //   .eq("id_peluquero", id_barbero);
   const { data: citas, error: errorCitas } = await supabase
     .from("citas_disponibilidad")
     .select("id_cita, hora_inicio, duracion_total, tipo_estado")
@@ -186,24 +180,23 @@ export async function GET(request: Request) {
 function calculaHorasDisponibles(
   duracionServicios: number,
   citasCogidas: citaDia[],
-  inicioTramo: string,
-  finTramo: string,
-  dia: Date
+  inicioTramo: string, // Formato "HH:mm"
+  finTramo: string, // Formato "HH:mm"
+  dia: Date // El día seleccionado para la cita
 ) {
-  const dateActual = new Date();
-  //3 horas de antelacion para reservar
-  const horaMinimaReserva = new Date(dateActual.getTime() + 3 * 60 * 60 * 1000);
-  const horaMinima =
-    horaMinimaReserva.getHours().toString().padStart(2, "0") +
-    ":" +
-    horaMinimaReserva.getMinutes().toString().padStart(2, "0");
+  const dateActual = new Date(); // Momento actual
+  const horaMinimaReserva = new Date(dateActual.getTime() + 3 * 60 * 60 * 1000); // Momento actual + 3 horas
 
-  // Convierte una hora "HH:mm:ss" a minutos desde medianoche
-  // Para hacer las comparaciones
+  // Convierte una hora "HH:mm:ss" o "HH:mm" a minutos desde medianoche
+  // Ignora los segundos para los cálculos basados en minutos.
   function horaToMinutos(hora: string): number {
-    const [h, m, s] = hora.split(":").map(Number);
-    return h * 60 + m + Math.floor((s || 0) / 60);
+    const partes = hora.split(":");
+    const h = Number(partes[0]);
+    const m = Number(partes[1]);
+    // const s = Number(partes[2] || 0); // Segundos son ignorados en este contexto
+    return h * 60 + m;
   }
+
   function minutosToHora(minutos: number): string {
     const h = Math.floor(minutos / 60)
       .toString()
@@ -211,54 +204,75 @@ function calculaHorasDisponibles(
     const m = (minutos % 60).toString().padStart(2, "0");
     return `${h}:${m}`;
   }
-  //Coger los minutos del inicio y el final del horario
+
   const inicioMin = horaToMinutos(inicioTramo);
   const finMin = horaToMinutos(finTramo);
-  const horaMinimaMin = horaToMinutos(horaMinima);
 
-  //Se ordenan las citas por hora
+  let actual = inicioMin; // Por defecto, comenzamos al inicio del tramo
+
+  if (esHoy(dia, dateActual)) {
+    // ¿El día de la cita es hoy?
+    // Sí, la cita es para hoy. Aplicar la regla de las 3 horas.
+
+    // Obtener HH:MM de horaMinimaReserva para convertir a minutos
+    const horaMinimaReservaStr =
+      horaMinimaReserva.getHours().toString().padStart(2, "0") +
+      ":" +
+      horaMinimaReserva.getMinutes().toString().padStart(2, "0");
+    const horaMinimaReservaAbsolutaEnMinutos =
+      horaToMinutos(horaMinimaReservaStr);
+
+    if (horaMinimaReserva.getDate() === dia.getDate()) {
+      // Sí, (actual + 3h) sigue siendo hoy.
+      let earliestStartTimeBasedOn3HrRule = horaMinimaReservaAbsolutaEnMinutos;
+
+      // AJUSTE: Redondear hacia ARRIBA la hora de inicio calculada por la regla de 3h
+      // al próximo múltiplo de duracionServicios.
+      // Esto asegura que si la regla de 3h determina el inicio, este sea "limpio".
+      if (earliestStartTimeBasedOn3HrRule % duracionServicios !== 0) {
+        earliestStartTimeBasedOn3HrRule =
+          Math.ceil(earliestStartTimeBasedOn3HrRule / duracionServicios) *
+          duracionServicios;
+      }
+
+      // El punto de partida 'actual' debe ser el más tardío entre:
+      // 1. El inicio del tramo del barbero (`inicioMin`)
+      // 2. La hora mínima de reserva ajustada (`earliestStartTimeBasedOn3HrRule`)
+      actual = Math.max(inicioMin, earliestStartTimeBasedOn3HrRule);
+    } else {
+      // No, (actual + 3h) ha pasado a mañana (o más tarde).
+      // No hay huecos válidos hoy que cumplan la antelación.
+      actual = finMin + 1;
+    }
+  }
+
   const citasOrdenadas = [...citasCogidas].sort(
     (a, b) => horaToMinutos(a.hora_inicio) - horaToMinutos(b.hora_inicio)
   );
 
   const horasDisponibles: string[] = [];
-  //Hora de apertura, inicioHorario
-  let actual = inicioMin;
 
   while (actual + duracionServicios <= finMin) {
-    if (actual < horaMinimaMin && esHoy(dia, dateActual)) {
-      actual += duracionServicios;
-      continue;
-    }
-    //Se comprueba si la franja elegida choca con alguna cita yas cogida
+    const intervaloFin = actual + duracionServicios;
     const citaSolapada = citasOrdenadas.find((cita) => {
-      //En las citas que hay, se coge para cada cita, la hora de inicio
       const citaInicio = horaToMinutos(cita.hora_inicio);
-      //La hora de fin de esa cita
       const citaFin = citaInicio + cita.duracion_total;
-      //Final del hueco de tiempo a evaluar
-      const intervaloFin = actual + duracionServicios;
-      //actual es el minuto actual (dede medianoche ) que se esta evaluando
-      //Se comprueba si el hueco de tiempo a evaluar (actual + intervaloFin) se solapa con cita existente (citaInicio y citaFin)
       return actual < citaFin && intervaloFin > citaInicio;
     });
 
-    //Si hay solape, se salta al final de esa cita
     if (citaSolapada) {
       const citaFin =
         horaToMinutos(citaSolapada.hora_inicio) + citaSolapada.duracion_total;
       actual = citaFin;
     } else {
-      //Si no lo hay, se anade la hora a las horas disponibles y se suma la duracion de los servicios al horario
       horasDisponibles.push(minutosToHora(actual));
       actual += duracionServicios;
     }
   }
-  //console.log("Horas disponibles", horasDisponibles);
   return horasDisponibles;
 }
 
-function esHoy(d1: Date, d2: Date) {
+function esHoy(d1: Date, d2: Date): boolean {
   return (
     d1.getFullYear() === d2.getFullYear() &&
     d1.getMonth() === d2.getMonth() &&

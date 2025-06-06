@@ -18,29 +18,11 @@ type LoginResponse = {
   token?: string;
 };
 
-export async function OPTIONS() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  });
-}
-
 export async function POST(request: Request): Promise<Response> {
   try {
     // Parsear el cuerpo de la solicitud
     const body: LoginRequest = await request.json();
     const { email, password } = body;
-
-    console.log("Login recibida en la api", email, password);
-
-    console.log("CORS Headers:", {
-      "Content-Type": "application/json",
-      ...corsHeaders,
-    });
 
     // Validar los datos de entrada
     if (!email || !password) {
@@ -51,7 +33,7 @@ export async function POST(request: Request): Promise<Response> {
         }),
         {
           status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          headers: { "Content-Type": "application/json" },
         }
       );
     }
@@ -63,7 +45,7 @@ export async function POST(request: Request): Promise<Response> {
       .eq("email", email)
       .single();
 
-    if (userError || !user) {
+    if (userError?.code === "PGRST116" || !user) {
       return new Response(
         JSON.stringify({
           success: false,
@@ -72,7 +54,7 @@ export async function POST(request: Request): Promise<Response> {
         }),
         {
           status: 401,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          headers: { "Content-Type": "application/json" },
         }
       );
     }
@@ -83,13 +65,12 @@ export async function POST(request: Request): Promise<Response> {
 
     let passwordDesencriptada = "";
 
+    //Esto es porque tengo las contrasenas creadas antes del sistema de encriptacion
     if (user.password === "dani") {
       passwordDesencriptada = "dani";
     } else {
       passwordDesencriptada = desincriptar(user.password);
     }
-
-    console.log("contrasena desencript", passwordDesencriptada);
 
     if (passwordDesencriptada !== password) {
       // Esto es solo para el ejemplo, NO es seguro en producción
@@ -97,7 +78,7 @@ export async function POST(request: Request): Promise<Response> {
         JSON.stringify({ success: false, message: "Contraseña incorrecta" }),
         {
           status: 401,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          headers: { "Content-Type": "application/json" },
         }
       );
     }
@@ -117,11 +98,9 @@ export async function POST(request: Request): Promise<Response> {
       token: token,
     };
 
-    console.log("Response de getUsuario:", JSON.stringify(response, null, 2));
-
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     console.error("Error en login:", error);
@@ -129,7 +108,7 @@ export async function POST(request: Request): Promise<Response> {
       JSON.stringify({ success: false, message: "Error interno del servidor" }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json" },
       }
     );
   }

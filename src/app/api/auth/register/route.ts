@@ -24,9 +24,10 @@ export async function POST(request: Request) {
     // Comprobar si el email ya existe
     const { data: existingUser, error: emailError } = await supabase
       .from("usuarios")
-      .select("email")
+      .select("email, phone")
       .eq("email", onlyBody.email)
       .single();
+    //todo: coger email y phone en la misma consulta y si email == oblyBody.email, error de email, si no, error de telefono. Si no para alante.
 
     if (emailError && emailError.code !== "PGRST116") {
       // Solo es un error si NO es "no rows"

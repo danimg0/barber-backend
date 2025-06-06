@@ -13,10 +13,19 @@ export async function GET(request: Request): Promise<Response> {
       });
     }
 
+    let hoy = new Date();
+    hoy.setHours(hoy.getHours() + 2);
+
     const { data, error: newError } = await supabase
       .from("citas_con_servicios")
       .select("*")
-      .eq("id_cliente", user?.id);
+      .eq("id_cliente", user?.id)
+      .eq("tipo_estado", "pendiente")
+      .gt("fecha_cita", hoy.toISOString())
+      .order("fecha_cita", { ascending: true })
+      .order("hora_inicio", { ascending: true });
+
+    console.log("data:", JSON.stringify(data));
 
     if (newError)
       return new Response(JSON.stringify({ error: error }), {
