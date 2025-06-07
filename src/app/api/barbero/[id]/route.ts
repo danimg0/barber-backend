@@ -3,6 +3,7 @@
 
 import { getUserFromRequest } from "@/lib/auth/authHelper";
 import { supabase } from "@/lib/constants/supabase";
+import { log } from "console";
 import { NextRequest } from "next/server";
 
 export async function DELETE(
@@ -28,6 +29,37 @@ export async function DELETE(
         headers: { "Content-Type": "application/json" },
       });
     }
+
+    // Comprobar si tiene citas pendientes
+    const { data: citas, error: citasError } = await supabase
+      .from("citas_con_servicios")
+      .select("id_cita")
+      .eq("id_peluquero", barberoId)
+      .eq("tipo_estado", "pendiente")
+      .limit(1);
+
+    console.log("error de citas:", citasError);
+
+    if (citasError) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Error comprobando citas pendientes",
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    if (citas && citas.length > 0) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "El barbero tiene citas pendientes.",
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+    //Fin comprobación de citas pendientes
 
     const { data, error: deleteError } = await supabase
       .from("usuarios")
@@ -79,7 +111,7 @@ export async function PATCH(
 
     const id = Number((await params).id);
 
-    const { name, email, phone, horario } = body;
+    const { name, email, phone, horario, disponible } = body;
 
     const { data, error } = await supabase.rpc("modificar_barbero", {
       p_id_usuario: id,
@@ -87,6 +119,7 @@ export async function PATCH(
       p_email: email,
       p_phone: phone,
       p_horario: horario ?? null,
+      p_disponible: disponible,
     });
 
     if (error) {

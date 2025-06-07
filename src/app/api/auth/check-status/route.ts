@@ -6,6 +6,8 @@ export const runtime = "nodejs";
 type CheckStatusResponse = {
   id: string;
   email: string;
+  phone: string;
+  notifications: boolean;
   name: string;
   rol: number;
   token: string;
@@ -56,7 +58,7 @@ export async function GET(request: Request): Promise<Response> {
     // Obtener información del usuario usando el ID del token
     const { data: user, error: userError } = await supabase
       .from("usuarios")
-      .select("id, email, name, rol")
+      .select("id, email, phone, notificaciones_activadas, name, rol")
       .eq("id", decoded.userId)
       .single();
 
@@ -82,6 +84,8 @@ export async function GET(request: Request): Promise<Response> {
     const response: CheckStatusResponse = {
       id: user.id,
       email: user.email,
+      phone: user.phone,
+      notifications: user.notificaciones_activadas,
       name: user.name,
       rol: user.rol,
       token: newToken,

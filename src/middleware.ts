@@ -4,10 +4,11 @@ const allowedOrigins = [
   // cuidado que esta me va cambiando con cada push del main
   "https://vercel.com/danis-projects-5aeb92e7/barber-backend-vhfs/8E8Lqt9snCNrWag984oVhW2hudyD",
   "http://localhost:8081",
+  "http://192.168.1.148:8081",
 ];
 
 const corsOptions = {
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 

@@ -14,6 +14,8 @@ type LoginResponse = {
   id: string;
   email: string;
   name: string;
+  phone: string;
+  notificacions?: boolean;
   rol: number[];
   token?: string;
 };
@@ -41,7 +43,7 @@ export async function POST(request: Request): Promise<Response> {
     // Buscar usuario por nombre en la base de datos
     const { data: user, error: userError } = await supabase
       .from("usuarios")
-      .select("id, email, password, name, rol")
+      .select("id, email, password, phone, notificaciones_activadas, name, rol")
       .eq("email", email)
       .single();
 
@@ -94,6 +96,8 @@ export async function POST(request: Request): Promise<Response> {
       id: user.id,
       email: user.email,
       name: user.name,
+      phone: user.phone,
+      notificacions: user.notificaciones_activadas,
       rol: user.rol,
       token: token,
     };

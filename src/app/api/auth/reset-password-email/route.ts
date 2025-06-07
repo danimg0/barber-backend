@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     if ((emailError && emailError.code !== "PGRST116") || !data) {
       console.info(`El correo ${emailRequestingChange} no existe`);
       return new Response(
-        JSON.stringify({ succes: false, error: "El correo no existe" })
+        JSON.stringify({ success: false, error: "El correo no existe" })
       );
     }
 
@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
     let resetURL = "";
     if (process.env.STAGE == "dev") {
       resetURL = `${resetPasswordLink}?token=${token}`;
+      console.log("url creada: ", resetURL);
     } else {
       //poner link https y configurarlo con la web para que abra la app si esta instalada
       resetURL = "";
@@ -45,7 +46,18 @@ export async function POST(request: NextRequest) {
       sendTo: emailRequestingChange,
       subject: "Recuperación de la contraseña",
       text: `Haz clic en el siguiente enlace para restablecer tu contraseña: ${resetURL}`,
-      html: `<p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p><a href="${resetURL}">${resetURL}</a><p>Si no lo has solicitado, no hace falta que hagas nada</p>`,
+      html: `
+<div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+  <p>Haz clic en el siguiente botón para restablecer tu contraseña:</p>
+  <a href="${resetURL}" 
+     style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">
+    Restablecer contraseña
+  </a>
+  <p>Si no lo has solicitado, puedes ignorar este mensaje.</p>
+  <p style="font-size: 14px; color: #666;">Enlace directo: <a href="${resetURL}">${resetURL}</a></p>
+</div>
+
+      `,
     });
 
     // const { data: updateData, error: updateError } = await supabase

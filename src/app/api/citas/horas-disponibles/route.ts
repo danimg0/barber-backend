@@ -94,6 +94,7 @@ export async function GET(request: Request) {
   const { data: citas, error: errorCitas } = await supabase
     .from("citas_disponibilidad")
     .select("id_cita, hora_inicio, duracion_total, tipo_estado")
+    .eq("tipo_estado", "pendiente") // es una view y esta asi
     .eq("fecha_cita", diaStr)
     .eq("id_peluquero", id_barbero);
 

@@ -107,6 +107,36 @@ export async function DELETE(
       });
     }
 
+    // Comprobar si hay citas pendientes con este servicio
+    const { data: citas, error: citasError } = await supabase
+      .from("citas_con_servicios")
+      .select("id_cita")
+      .eq("tipo_estado", "pendiente")
+      .contains("servicios", JSON.stringify([{ id: servicioId }]))
+      .limit(1);
+
+    console.log("error de citas:", citasError);
+
+    if (citasError) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Error comprobando citas asociadas",
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    if (citas && citas.length > 0) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Error: Citas pendientes asociadas.",
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     const { error: deleteError } = await supabase
       .from("servicios")
       .delete()
