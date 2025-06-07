@@ -30,7 +30,7 @@ export async function sendMail({
   try {
     const isVerified = await transporter.verify();
     const info = await transporter.sendMail({
-      from: `"Web Contact" <${SMTP_SERVER_USERNAME}>`,
+      from: `"BarberApp" <${SMTP_SERVER_USERNAME}>`,
       to: sendTo || SITE_MAIL_RECIEVER,
       subject,
       text,

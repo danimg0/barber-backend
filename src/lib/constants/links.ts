@@ -1,5 +1,4 @@
 //Localhost
-export const resetPasswordLink =
-  "https://barber-backend-vhfs.vercel.app/auth/reset-password";
+export const webBaseLink = "https://barber-app--aklvas6l4h.expo.app/";
 // export const resetPasswordLink = "barberapp:///auth/reset-password";
 //Produccion

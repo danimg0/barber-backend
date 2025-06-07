@@ -2,7 +2,7 @@ import { supabase } from "@/lib/constants/supabase";
 import { sendMail } from "@/lib/mails/emailSender";
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
-import { resetPasswordLink } from "@/lib/constants/links";
+import { webBaseLink } from "@/lib/constants/links";
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     // Crear un enlace que incluye ese reset token
     let resetURL = "";
     if (process.env.STAGE == "dev") {
-      resetURL = `${resetPasswordLink}?token=${token}`;
+      resetURL = `${webBaseLink}?token=${token}`;
       console.log("url creada: ", resetURL);
     } else {
       //poner link https y configurarlo con la web para que abra la app si esta instalada
