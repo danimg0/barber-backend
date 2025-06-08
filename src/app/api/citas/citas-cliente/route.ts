@@ -25,7 +25,7 @@ export async function GET(request: Request): Promise<Response> {
       .order("fecha_cita", { ascending: true })
       .order("hora_inicio", { ascending: true });
 
-    console.log("data:", JSON.stringify(data));
+    // console.log("data:", JSON.stringify(data));
 
     if (newError)
       return new Response(JSON.stringify({ error: error }), {

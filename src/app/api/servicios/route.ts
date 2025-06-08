@@ -45,10 +45,10 @@ interface Servicio {
 
 export async function POST(request: Request) {
   try {
-    console.log("POST /api/servicios");
+    // console.log("POST /api/servicios");
     const body: Servicio = await request.json();
 
-    console.log("POST /api/servicios", body);
+    // console.log("POST /api/servicios", body);
 
     if (
       !body ||
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
       .select("*")
       .single();
 
-    console.log("Respuesta de la base de datos:", data, newError);
+    // console.log("Respuesta de la base de datos:", data, newError);
 
     if (newError) {
       return new Response(

@@ -96,7 +96,7 @@ export async function PATCH(
     const id_cita = Number(id);
     const body = await request.json();
 
-    console.log("Body de la petición PATCH:", body);
+    // console.log("Body de la petición PATCH:", body);
 
     const { error: error2 } = await supabase
       .from("citas_r_cliente_empleado")

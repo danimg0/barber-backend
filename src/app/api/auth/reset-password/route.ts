@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-    console.log("usuario actualizado");
+    // console.log("usuario actualizado");
 
     return NextResponse.json({
       success: true,

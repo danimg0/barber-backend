@@ -12,7 +12,7 @@ export async function DELETE(
 ) {
   const { id } = await params;
   const barberoId = await Number(id);
-  console.log(`Eliminando barbero con ID: ${barberoId}`);
+  // console.log(`Eliminando barbero con ID: ${barberoId}`);
 
   if (!barberoId) {
     return new Response(
@@ -38,7 +38,7 @@ export async function DELETE(
       .eq("tipo_estado", "pendiente")
       .limit(1);
 
-    console.log("error de citas:", citasError);
+    // console.log("error de citas:", citasError);
 
     if (citasError) {
       return new Response(

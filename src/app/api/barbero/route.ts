@@ -43,10 +43,10 @@ export async function POST(request: Request) {
       p_horario: horario ?? null,
     });
 
-    console.log(
-      `Respuesta de la creación del barbero: ${JSON.stringify(data)}`
-    );
-    console.log(`Error al crear el barbero: ${JSON.stringify(error)}`);
+    // console.log(
+    //   `Respuesta de la creación del barbero: ${JSON.stringify(data)}`
+    // );
+    // console.log(`Error al crear el barbero: ${JSON.stringify(error)}`);
 
     if (error) {
       console.error(`Retornando error: ${error.message}`);

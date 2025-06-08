@@ -1,4 +1,4 @@
 //Localhost
-export const webBaseLink = "https://barber-app--aklvas6l4h.expo.app";
+export const webBaseLink = "https://barber-app--sozw9pyd2x.expo.app";
 // export const resetPasswordLink = "barberapp:///auth/reset-password";
 //Produccion

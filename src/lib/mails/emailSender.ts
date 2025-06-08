@@ -20,12 +20,14 @@ export async function sendMail({
   subject,
   text,
   html,
+  attachments,
 }: {
   email: string;
   sendTo?: string;
   subject: string;
   text: string;
   html?: string;
+  attachments?: { filename: string; content: string }[];
 }) {
   try {
     const isVerified = await transporter.verify();
@@ -36,6 +38,14 @@ export async function sendMail({
       text,
       html: html ?? "",
       replyTo: email,
+
+      attachments:
+        attachments?.map((attachment) => ({
+          filename: attachment.filename,
+          content: attachment.content,
+          contentType: "text/calendar; charset=utf-8",
+          contentDisposition: "attachment", // Fuerza la descarga
+        })) || [],
     });
     console.log("Message Sent", info.messageId);
     return info;

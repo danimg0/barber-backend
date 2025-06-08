@@ -15,7 +15,7 @@ const iv = Buffer.from(process.env.ENCRYPTION_IV!, "utf-8");
 export async function getUserFromRequest(request: Request) {
   const authHeader = request.headers.get("Authorization");
 
-  console.log("authHeader: ", authHeader);
+  // console.log("authHeader: ", authHeader);
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return { error: "Token no proporcionado", status: 401 };
   }
@@ -61,16 +61,16 @@ export function encriptar(password: string) {
   return encrypted;
 }
 export function desincriptar(password: string) {
-  console.log("Comenzando a desencriptar");
-  console.log("key", key, "iv", iv);
+  // console.log("Comenzando a desencriptar");
+  // console.log("key", key, "iv", iv);
 
   const decipher = crypto.createDecipheriv(algorithm, key, iv);
   let decrypted = decipher.update(password, "hex", "utf-8");
-  console.log("Decipher creado y update done");
+  // console.log("Decipher creado y update done");
 
   decrypted += decipher.final("utf-8");
 
-  console.log("resutlado: ", decrypted);
+  // console.log("resutlado: ", decrypted);
 
   return decrypted;
 }

@@ -55,7 +55,7 @@ export async function GET(request: Request) {
     );
   }
 
-  console.log("DEBUG: Servicios seleccionados:", arrServicios);
+  // console.log("DEBUG: Servicios seleccionados:", arrServicios);
 
   const { data: duracionServicios, error: errorDuracion } = await supabase
     .from("servicios")
@@ -70,14 +70,14 @@ export async function GET(request: Request) {
     );
   }
 
-  console.log("DEBUG: Duración de servicios:", duracionServicios);
+  // console.log("DEBUG: Duración de servicios:", duracionServicios);
 
   const { data: horarioPeluquero } = await supabase
     .from("barberos_con_horarios")
     .select("horario")
     .eq("id", id_barbero);
 
-  console.log("DEBUG: Horario del peluquero:", horarioPeluquero);
+  // console.log("DEBUG: Horario del peluquero:", horarioPeluquero);
 
   const duracionTotal =
     //DuracionServicios es el array de objetos duracion ([{duracion: 20}, {duracion: 30}])
@@ -98,7 +98,7 @@ export async function GET(request: Request) {
     .eq("fecha_cita", diaStr)
     .eq("id_peluquero", id_barbero);
 
-  console.log("DEBUG: Citas recuperadas:", citas);
+  // console.log("DEBUG: Citas recuperadas:", citas);
 
   if (errorCitas) {
     console.error("Error en consulta de citas:", {

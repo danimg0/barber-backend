@@ -32,6 +32,9 @@ export function generateICS({
     ] as [number, number, number, number, number],
     title,
     description,
+    method: "REQUEST",
+    status: "CONFIRMED",
+    productId: "//BarberShop//Appointments//ES",
   };
 
   if (location) {
