@@ -1,5 +1,7 @@
 import { getUserFromRequest } from "@/lib/auth/authHelper";
 import { supabase } from "@/lib/constants/supabase";
+// import { generateICS } from "@/lib/calendar/generateICS";
+// import { sendMail } from "@/lib/mails/emailSender";
 
 interface reqBody {
   id_cliente: number;
@@ -84,6 +86,44 @@ export async function POST(request: Request): Promise<Response> {
       });
 
     let idCitaGenerada = data;
+
+    const startDate = new Date(`${body.fecha_cita}T${body.hora_inicio}`);
+    const endDate = new Date(`${body.fecha_cita}T${body.hora_fin}`);
+
+    // const { value: icsContent } = await generateICS({
+    //   title: "Tu cita en la barbería",
+    //   description: `Tienes una cita el ${startDate.toLocaleDateString()} a las ${startDate.toLocaleTimeString()}`,
+    //   location: "Barbería Ejemplo, Calle Ficticia 123",
+    //   startDate,
+    //   endDate,
+    //   organizer: {
+    //     name: "Barbería Ejemplo",
+    //     email: "no-reply@tubarberia.com",
+    //   },
+    // });
+
+    // Enviar el correo al cliente
+    //   await sendMail({
+    //     email: "no-reply@tubarberia.com",
+    //     sendTo: body.telefono
+    //       ? `${body.telefono}@sms.com`
+    //       : "cliente@ejemplo.com", // ajusta el destino real
+    //     subject: "Confirmación de cita",
+    //     text: "Adjuntamos tu cita para añadir al calendario.",
+    //     html: `
+    //   <p>Hola ${body.nombreCliente ?? "cliente"},</p>
+    //   <p>Tu cita ha sido confirmada para el ${startDate.toLocaleDateString()} a las ${startDate.toLocaleTimeString()}.</p>
+    //   <p><a href="cid:cita.ics" download="cita.ics" style="padding:10px 20px;background:#4CAF50;color:#fff;text-decoration:none;border-radius:5px;">Añadir al calendario</a></p>
+    //   <p>También puedes abrir el archivo adjunto con tu app de calendario.</p>
+    // `,
+    //     attachments: [
+    //       {
+    //         filename: "cita.ics",
+    //         content: icsContent,
+    //         contentType: "text/calendar",
+    //       },
+    //     ],
+    //   });
 
     return new Response(
       JSON.stringify({

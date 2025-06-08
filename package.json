@@ -11,6 +11,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.49.9",
     "@types/nodemailer": "^6.4.17",
+    "ics": "^3.8.1",
     "jsonwebtoken": "^9.0.2",
     "next": "15.3.3",
     "nodemailer": "^7.0.3",

@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     // Crear un enlace que incluye ese reset token
     let resetURL = "";
     if (process.env.STAGE == "dev") {
-      resetURL = `${webBaseLink}?token=${token}`;
+      resetURL = `${webBaseLink}/auth/reset-password?token=${token}`;
       console.log("url creada: ", resetURL);
     } else {
       //poner link https y configurarlo con la web para que abra la app si esta instalada
